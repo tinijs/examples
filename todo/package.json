@@ -17,6 +17,7 @@
   "dependencies": {
     "@tinijs/core": "^0.15.4",
     "@tinijs/meta": "^0.15.0",
+    "@tinijs/pwa": "^0.15.0",
     "@tinijs/router": "^0.15.0",
     "@tinijs/store": "^0.15.1",
     "@tinijs/ui": "^0.15.0",

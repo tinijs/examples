@@ -2,7 +2,23 @@
   "out": "www",
   "ui": {
     "use": [
-      "bootstrap/light"
+      "bootstrap/light,dark"
+    ]
+  },
+  "pwa": {
+    "globPatterns": [
+      "**/*.html",
+      "**/*.css",
+      "**/*.js",
+      "**/*.ico",
+      "**/*.svg",
+      "**/*.webp",
+      "**/*.jpg",
+      "**/*.png",
+      "**/*.woff",
+      "**/*.woff2",
+      "**/*.ttf",
+      "**/*.otf"
     ]
   }
 }
