@@ -1,0 +1,8 @@
+{
+  "out": "www",
+  "ui": {
+    "use": [
+      "bootstrap/light"
+    ]
+  }
+}
