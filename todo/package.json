@@ -1,7 +1,7 @@
 {
   "name": "todo-app",
   "version": "0.0.0",
-  "description": "A To Do app built using TiniJS framework.",
+  "description": "A To Do powered by the TiniJS framework.",
   "author": "Lam Nhan",
   "homepage": "https://tinijs.dev",
   "license": "MIT",
@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@tinijs/core": "^0.15.4",
-    "@tinijs/meta": "^0.15.0",
+    "@tinijs/mdi-icons": "^0.15.0",
     "@tinijs/pwa": "^0.15.0",
     "@tinijs/router": "^0.15.0",
     "@tinijs/store": "^0.15.1",
