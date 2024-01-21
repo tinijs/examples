@@ -1,0 +1,34 @@
+/*
+ * Skins and utils
+ */
+
+@import '../node_modules/@tinijs/ui/skins.css';
+
+/*
+ * Global styles
+ */
+
+#qr-scanner {
+  overflow: hidden;
+  border: none !important;
+  width: 100vw;
+  width: 100dvw;
+  height: calc(100vh - 69px);
+  height: calc(100dvh - 69px);
+  margin-top: calc(69px - 100vh);
+  margin-top: calc(69px - 100dvh);
+}
+
+#qr-scanner > div:first-child,
+#qr-scanner__dashboard_section_csr + div,
+#html5-qrcode-anchor-scan-type-change {
+  display: none !important;
+}
+
+#html5-qrcode-button-camera-permission {
+  padding: var(--size-space-0_5x);
+  background: none;
+  border: 1px solid var(--color-medium);
+  border-radius: var(--size-radius);
+  color: var(--color-foreground);
+}
