@@ -1,0 +1,14 @@
+# general
+.DS_Store
+node_modules
+
+# parceljs
+.parcel-cache
+
+# tinijs
+.tini-app
+www
+
+# app
+app/**/*.js
+!app/vendor/**/*.js
