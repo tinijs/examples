@@ -1,0 +1,35 @@
+{
+  "name": "todo-app",
+  "version": "0.0.0",
+  "description": "A To Do powered by the TiniJS framework.",
+  "author": "Lam Nhan",
+  "homepage": "https://tinijs.dev",
+  "license": "MIT",
+  "browserslist": "> 0.5%, last 2 versions, not dead",
+  "scripts": {
+    "dev": "tini dev",
+    "build": "tini build",
+    "preview": "tini preview",
+    "test": "tini test",
+    "lint": "gts lint",
+    "fix": "gts fix"
+  },
+  "dependencies": {
+    "@formkit/auto-animate": "^0.8.1",
+    "@tinijs/core": "^0.15.4",
+    "@tinijs/mdi-icons": "^0.15.0",
+    "@tinijs/pwa": "^0.15.0",
+    "@tinijs/router": "^0.15.0",
+    "@tinijs/store": "^0.15.1",
+    "@tinijs/ui": "^0.15.0",
+    "@tinijs/ui-bootstrap": "^0.15.0",
+    "@tinijs/ui-common": "^0.15.0",
+    "lit": "^3.1.0",
+    "tinijs": "^0.15.0"
+  },
+  "devDependencies": {
+    "@tinijs/cli": "^0.15.1",
+    "gts": "^5.2.0",
+    "typescript": "~5.3.3"
+  }
+}
