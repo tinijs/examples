@@ -1,9 +1,9 @@
 {
-  "name": "pwa-demo",
+  "name": "chat-demo",
   "version": "0.0.0",
-  "description": "A simple PWA app powered by the TiniJS framework.",
+  "description": "A simple Chat app powered by the TiniJS framework.",
   "author": "Lam Nhan",
-  "homepage": "https://pwa-demo.nhan.app",
+  "homepage": "https://chat-demo.tinijs.dev",
   "license": "MIT",
   "browserslist": "> 0.5%, last 2 versions, not dead",
   "scripts": {
