@@ -76,6 +76,10 @@ export class AppTasksComponent extends TiniComponent implements OnReady {
                 <tini-checkboxes
                   events="change"
                   styleDeep=${`
+                    .input {
+                      min-width: var(--checkbox-scale);
+                      min-height: var(--checkbox-scale);
+                    }
                     .label {
                       color: ${
                         !task.done
