@@ -1,5 +1,5 @@
 import {html} from 'lit';
-import {map} from 'lit/directives/map';
+import {repeat} from 'lit/directives/repeat';
 import {styleMap} from 'lit/directives/style-map';
 
 import {CommonColors, CommonGradients, Scales} from 'tinijs';
@@ -17,7 +17,7 @@ import {TiniCheckboxesComponent} from '@tinijs/ui/components/checkboxes';
 import {Task} from '../stores/main';
 
 export interface ToggleEventDetail {
-  index: number;
+  task: Task;
   done: boolean;
 }
 
@@ -30,12 +30,13 @@ export class AppTasksComponent extends TiniComponent {
   @Input() tasks: Task[] = [];
 
   @Output() toggle!: EventEmitter<ToggleEventDetail>;
-  @Output() delete!: EventEmitter<number>;
+  @Output() delete!: EventEmitter<Task>;
 
   protected render() {
-    return map(
+    return repeat(
       this.tasks,
-      (task, index) => html`
+      task => task.id,
+      task => html`
         <div
           style=${styleMap({
             display: 'flex',
@@ -60,30 +61,25 @@ export class AppTasksComponent extends TiniComponent {
           >
             <tini-checkboxes
               events="change"
+              styleDeep=${`
+                .label {
+                  text-decoration: ${!task.done ? 'none' : 'line-through'};
+                }
+              `}
               .items=${[
                 {
                   'checked:scheme': CommonColors.Teal,
                   scale: Scales.XL,
+                  label: task.content,
                   checked: task.done,
                 },
               ]}
               @change=${(e: CustomEvent<InputEvent>) =>
                 this.toggle.emit({
-                  index,
+                  task,
                   done: (e.detail.target as any).checked,
                 })}
             ></tini-checkboxes>
-            <strong
-              style=${styleMap({
-                fontSize: 'var(--size-text-1_5x)',
-                fontWeight: !task.done ? 'bold' : 'normal',
-                textDecoration: !task.done ? 'none' : 'line-through',
-                color: !task.done
-                  ? 'var(--color-foreground)'
-                  : 'var(--color-medium)',
-              })}
-              >${task.content}</strong
-            >
           </div>
           <div>
             <button
@@ -96,7 +92,7 @@ export class AppTasksComponent extends TiniComponent {
                 padding: 0;
                 cursor: pointer;
               "
-              @click=${() => this.delete.emit(index)}
+              @click=${() => this.delete.emit(task)}
             >
               <icon-close scheme=${CommonGradients.BloodyMimosa}></icon-close>
             </button>

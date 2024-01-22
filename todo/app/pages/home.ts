@@ -10,6 +10,7 @@ import {TiniSpinnerComponent} from '@tinijs/ui/components/spinner';
 import {renderChunk} from '../helpers/render';
 
 import {
+  Task,
   mainStore,
   loadTasks,
   addTask,
@@ -53,7 +54,7 @@ export class AppPageHome extends TiniComponent implements OnCreate {
         ></app-compose>
 
         <div style="margin-top: 2rem">
-          ${renderChunk(this.tasks, {
+          ${renderChunk([this.tasks], {
             loading: () => this.loadingTemplate,
             empty: () => this.emptyTemplate,
             main: () => this.tasksTemplate,
@@ -99,8 +100,8 @@ export class AppPageHome extends TiniComponent implements OnCreate {
       <app-tasks
         .tasks=${this.tasks}
         @toggle=${(e: CustomEvent<ToggleEventDetail>) =>
-          updateTask(e.detail.index, e.detail.done)}
-        @delete=${(e: CustomEvent<number>) => deleteTask(e.detail)}
+          updateTask(e.detail.task.id, e.detail.done)}
+        @delete=${(e: CustomEvent<Task>) => deleteTask(e.detail.id)}
       ></app-tasks>
     `;
   }
