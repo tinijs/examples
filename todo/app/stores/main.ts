@@ -21,22 +21,25 @@ export function loadTasks() {
 }
 
 export function addTask(content: string) {
-  const tasks = [...(mainStore.tasks || [])];
-  tasks.unshift({
-    id: Date.now() + String(Math.random() * 10000).slice(0, 3),
-    content,
-    done: false,
-  });
-  console.log(tasks[0]);
+  const tasks = [
+    {
+      id: Date.now() + String(Math.random() * 10000).slice(0, 3),
+      content,
+      done: false,
+    },
+    ...(mainStore.tasks || []),
+  ];
   mainStore.commit('tasks', tasks);
   localStorage.setItem(TASKS_KEY, JSON.stringify(tasks));
 }
 
 export function updateTask(id: string, done: boolean) {
-  const tasks = (mainStore.tasks || []).map(task => {
-    if (task.id === id) return {...task, done};
-    return task;
-  });
+  const tasks = (mainStore.tasks || [])
+    .map(task => {
+      if (task.id !== id) return task;
+      return {...task, done};
+    })
+    .sort((a, b) => (a.done === b.done ? 0 : a.done ? 1 : -1));
   mainStore.commit('tasks', tasks);
   localStorage.setItem(TASKS_KEY, JSON.stringify(tasks));
 }

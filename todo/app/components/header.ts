@@ -81,9 +81,16 @@ export class AppHeaderComponent
           style="
             display: flex;
             align-items: center;
-            gap: var(--size-space-1_25x);
+            gap: var(--size-space-1_5x);
           "
         >
+          <tini-switch
+            style="line-height: 1"
+            scheme=${CommonGradients.KaleSalad}
+            scale="ml"
+            .checked=${this.themeId === Themes.Dark}
+            @change=${this.toggleTheme}
+          ></tini-switch>
           <a
             href="https://github.com/tinijs/examples/tree/main/todo"
             target="_blank"
@@ -102,13 +109,6 @@ export class AppHeaderComponent
               scale=${Scales.MD}
             ></icon-github>
           </a>
-          <tini-switch
-            style="line-height: 1"
-            scheme=${CommonGradients.KaleSalad}
-            scale="ml"
-            .checked=${this.themeId === Themes.Dark}
-            @change=${this.toggleTheme}
-          ></tini-switch>
         </div>
       </div>
     `;
