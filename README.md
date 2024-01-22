@@ -13,7 +13,7 @@ Example apps powered by the TiniJS framework.
 ### To Do App
 
 - Demo: <https://todo-demo.tinijs.dev>
-- Source: <https://github.com/tinijs/examples/tree/main/todo>
+- Source code: <https://github.com/tinijs/examples/tree/main/todo>
 
 ## Developement
 
@@ -25,4 +25,4 @@ Example apps powered by the TiniJS framework.
 
 ## License
 
-**@tinijs/examples** is released under the [MIT](https://github.com/tinijs/examples/blob/master/LICENSE) license.
+**TiniJS Examples** are released under the [MIT](https://github.com/tinijs/examples/blob/master/LICENSE) license.
