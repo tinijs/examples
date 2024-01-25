@@ -1,6 +1,5 @@
+import {RenderData} from '@tinijs/core';
 import {createStore} from '@tinijs/store';
-
-import {ChunkData} from '../helpers/render';
 
 export interface Task {
   id: string;
@@ -9,7 +8,7 @@ export interface Task {
 }
 
 export const mainStore = createStore({
-  tasks: undefined as ChunkData<Task[]>,
+  tasks: undefined as RenderData<Task[]>,
 });
 
 const TASKS_KEY = 'tasks';

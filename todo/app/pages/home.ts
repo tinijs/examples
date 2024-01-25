@@ -1,13 +1,11 @@
 import {html} from 'lit';
 
 import {CommonColors, CommonGradients, Scales} from 'tinijs';
-import {Page, TiniComponent, OnCreate} from '@tinijs/core';
+import {Page, TiniComponent, OnCreate, render} from '@tinijs/core';
 import {Subscribe} from '@tinijs/store';
 
 import {IconFormatListCheckboxComponent} from '@tinijs/mdi-icons/format-list-checkbox';
 import {TiniSpinnerComponent} from '@tinijs/ui/components/spinner';
-
-import {renderChunk} from '../helpers/render';
 
 import {
   Task,
@@ -54,7 +52,7 @@ export class AppPageHome extends TiniComponent implements OnCreate {
         ></app-compose>
 
         <div style="margin-top: 2rem">
-          ${renderChunk([this.tasks], {
+          ${render([this.tasks], {
             loading: () => this.loadingTemplate,
             empty: () => this.emptyTemplate,
             main: () => this.tasksTemplate,
