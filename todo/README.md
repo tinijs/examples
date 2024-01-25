@@ -1,7 +1,6 @@
 # To Do App
 
 - Demo: <https://todo-demo.tinijs.dev>
-- Source code: <https://github.com/tinijs/examples/tree/main/todo>
 
 ## License
 
