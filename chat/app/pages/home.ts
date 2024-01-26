@@ -1,18 +1,15 @@
 import {html} from 'lit';
 
 import {Colors} from 'tinijs';
-import {Page, TiniComponent, OnInit, Inject} from '@tinijs/core';
+import {Page, TiniComponent, OnInit, Inject, render} from '@tinijs/core';
 import {UseRouter, Router, OnBeforeEnter} from '@tinijs/router';
 import {Subscribe} from '@tinijs/store';
+import {AuthService, User} from '@tinijs/toolbox/gun';
 
-import {User} from '../types/user';
 import {Thread} from '../types/thread';
 
-import {renderChunk} from '../helpers/render';
-
-import {AuthService} from '../services/auth';
-import {FriendsService} from '../services/friends';
-import {ThreadsService} from '../services/threads';
+import {FriendService} from '../services/friend';
+import {ThreadService} from '../services/thread';
 
 import {meStore, streamCurrentUser} from '../stores/me';
 import {friendsStore, streamFriendList} from '../stores/friends';
@@ -33,8 +30,8 @@ export class AppPageHome
   implements OnBeforeEnter, OnInit
 {
   @Inject() private readonly authService!: AuthService;
-  @Inject() private readonly friendsService!: FriendsService;
-  @Inject() private readonly threadsService!: ThreadsService;
+  @Inject() private readonly friendService!: FriendService;
+  @Inject() private readonly threadService!: ThreadService;
   @UseRouter() private readonly router!: Router;
 
   @Subscribe(meStore, 'user') private currentUser = meStore.user;
@@ -47,17 +44,16 @@ export class AppPageHome
 
   async onInit() {
     streamCurrentUser(this.authService);
-    streamFriendList(this.friendsService);
-    streamThreadList(this.threadsService);
+    streamFriendList(this.friendService);
+    streamThreadList(this.threadService);
 
-    // const x = await this.friendsService.getList();
+    // const x = await this.friendService.getList();
     // console.log(x);
   }
 
   onChanges() {
     // console.log('currentUser -> ', this.currentUser);
     console.log('friendList -> ', this.friendList);
-    
   }
 
   private get friends() {
@@ -81,7 +77,7 @@ export class AppPageHome
   }
 
   private clickUser(e: CustomEvent<User>) {
-    this.router.go(`/profile/${e.detail.username}`);
+    this.router.go(`/profile/${e.detail.alias}`);
   }
 
   private clickThread(e: CustomEvent<Thread>) {
@@ -101,7 +97,7 @@ export class AppPageHome
             gap: 2rem;
           "
         >
-          ${renderChunk(this.friendList, {
+          ${render([this.friendList], {
             loading: loadingPartial,
             empty: () => html`
               <app-friends
@@ -121,7 +117,7 @@ export class AppPageHome
         </tini-box>
 
         <section style="margin-top: var(--size-space-2x)">
-          ${renderChunk(this.threadList, {
+          ${render([this.threadList], {
             loading: loadingPartial,
             empty: () =>
               noMessagePartial({

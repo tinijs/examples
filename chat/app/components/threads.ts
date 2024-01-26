@@ -11,8 +11,8 @@ import {
   Output,
   EventEmitter,
 } from '@tinijs/core';
+import {User} from '@tinijs/toolbox/gun';
 
-import {User} from '../types/user';
 import {Thread} from '../types/thread';
 
 @Component()
@@ -53,7 +53,7 @@ export class AppThreadsComponent extends TiniComponent {
                 >
                   <img
                     src="${item.friend.profile.avatar}"
-                    alt="${item.friend.profile.username}"
+                    alt="${item.friend.profile.name}"
                     width="48"
                     height="48"
                     style="border-radius: 50%"

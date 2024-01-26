@@ -59,7 +59,7 @@ export class AppMessagesComponent extends TiniComponent {
                         <div>
                           <img
                             src=${item.sender.profile.avatar}
-                            alt=${item.sender.profile.username}
+                            alt=${item.sender.profile.name}
                             width="32"
                             height="32"
                             style="border-radius: 50%"

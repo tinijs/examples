@@ -1,27 +1,28 @@
 import {IGunChain, IGunOnEvent} from 'gun';
 
-import {Friend} from '../types/user';
-import {MessageNode, Message} from '../types/thread';
-
 import {
-  GUN,
+  AuthService,
+  UserService,
   GunResult,
   StreamCallback,
   StreamOptions,
   putValue,
   setValues,
   extractKeys,
-  createStreamer,
+  createStream,
   promisifyStream,
-  StreamContextItem,
-} from '../helpers/gun';
+  StreamContextEntry,
+} from '@tinijs/toolbox/gun';
 
-import {AuthService} from './auth';
-import {UsersService} from './users';
-import {FriendsService} from './friends';
-import {ThreadsService} from './threads';
+import {Friend} from '../types/friend';
+import {MessageNode, Message} from '../types/thread';
 
-export class MessagesService {
+import {GUN} from '../consts/gun';
+
+import {FriendService} from './friend';
+import {ThreadService} from './thread';
+
+export class MassageService {
   readonly TOP_NODE_NAME = 'messages';
 
   get userMessagesChain() {
@@ -32,16 +33,16 @@ export class MessagesService {
 
   constructor(
     public readonly authService: AuthService,
-    public readonly usersService: UsersService,
-    public readonly friendsService: FriendsService,
-    public readonly threadsService: ThreadsService
+    public readonly userService: UserService,
+    public readonly friendService: FriendService,
+    public readonly threadService: ThreadService
   ) {
-    (globalThis as any).messagesService = this; // for debugging
+    (globalThis as any).massageService = this; // for debugging
   }
 
   async getFriendByUserIdOrThrow(userId: string) {
     const friend = await promisifyStream(
-      this.friendsService.streamByUserId.bind(this.friendsService),
+      this.friendService.streamByUserId.bind(this.friendService),
       userId
     );
     if (!friend) throw new Error('Friend not found!');
@@ -57,7 +58,7 @@ export class MessagesService {
     const {content$$, createdAt} = messageNode;
     let decryptedContent: string | undefined;
     try {
-      decryptedContent = await this.authService.decryptData(
+      decryptedContent = await this.authService.decrypt(
         content$$,
         friend.profile.epub
       );
@@ -74,10 +75,10 @@ export class MessagesService {
 
   async sendMessage(userId: string, messageId: string, rawMessage: string) {
     const friend = await this.getFriendByUserIdOrThrow(userId);
-    const threadId = await this.threadsService.calculateThreadId(
+    const threadId = await this.threadService.calculateThreadId(
       friend.profile.id
     );
-    const message = await this.threadsService.buildMessage(
+    const message = await this.threadService.buildMessage(
       friend.profile.epub,
       rawMessage
     );
@@ -86,7 +87,7 @@ export class MessagesService {
       this.userMessagesChain.get(threadId).get(messageId),
       message
     );
-    await setValues(this.threadsService.userThreadsChain.get(threadId), {
+    await setValues(this.threadService.userThreadsChain.get(threadId), {
       latestAt: message.createdAt,
       latestContent$$: message.content$$,
     });
@@ -99,7 +100,7 @@ export class MessagesService {
     streamingCallback: (message: Message, evt: any) => void
   ) {
     const friend = await this.getFriendByUserIdOrThrow(userId);
-    const threadId = await this.threadsService.calculateThreadId(
+    const threadId = await this.threadService.calculateThreadId(
       friend.profile.id
     );
     return await this.getAndStreamMessages(
@@ -114,7 +115,7 @@ export class MessagesService {
     streamingCallback: (message: Message, evt: any) => void
   ) {
     const friend = await this.getFriendByUserIdOrThrow(userId);
-    const threadId = await this.threadsService.calculateThreadId(
+    const threadId = await this.threadService.calculateThreadId(
       this.authService.userId
     );
     return await this.getAndStreamMessages(
@@ -169,7 +170,7 @@ export class MessagesService {
     options?: StreamOptions
   ) {
     const friend = await this.getFriendByUserIdOrThrow(userId);
-    const threadId = await this.threadsService.calculateThreadId(
+    const threadId = await this.threadService.calculateThreadId(
       friend.profile.id
     );
     return this.streamMessages(
@@ -186,7 +187,7 @@ export class MessagesService {
     options?: StreamOptions
   ) {
     const friend = await this.getFriendByUserIdOrThrow(userId);
-    const threadId = await this.threadsService.calculateThreadId(
+    const threadId = await this.threadService.calculateThreadId(
       this.authService.userId
     );
     return this.streamMessages(
@@ -203,7 +204,7 @@ export class MessagesService {
     callback: StreamCallback<Message | null>,
     options?: StreamOptions
   ) {
-    const streamer = createStreamer(callback, options);
+    const streamer = createStream(callback, options);
     // list handler
     const listHandler = async (
       messageNode: GunResult<MessageNode>,
@@ -212,7 +213,7 @@ export class MessagesService {
       event: IGunOnEvent
     ) => {
       if (!messageNode) return;
-      const context = new Map<string, StreamContextItem>([
+      const context = new Map<string, StreamContextEntry>([
         [key, {raw: messageNode, message: msg, event}],
       ]);
       // process message node
@@ -225,4 +226,4 @@ export class MessagesService {
   }
 }
 
-export default MessagesService;
+export default MassageService;

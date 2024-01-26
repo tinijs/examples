@@ -8,8 +8,7 @@ import {
   Output,
   EventEmitter,
 } from '@tinijs/core';
-
-import {User} from '../types/user';
+import {User} from '@tinijs/toolbox/gun';
 
 @Component()
 export class AppFriendsComponent extends TiniComponent {
@@ -17,11 +16,12 @@ export class AppFriendsComponent extends TiniComponent {
 
   @Input() currentUser?: User;
   @Input() users?: User[];
+
   @Output() clickUser!: EventEmitter<User>;
 
-  private displayName(username: string) {
-    const name = username.split(' ')[0];
-    return name.length > 6 ? name.slice(0, 6) : name;
+  private displayName(name: string) {
+    const firstName = name.split(' ')[0];
+    return firstName.length > 6 ? firstName.slice(0, 6) : name;
   }
 
   protected render() {
@@ -51,7 +51,7 @@ export class AppFriendsComponent extends TiniComponent {
                 >
                   <img
                     src="${item.avatar}"
-                    alt="${item.username}"
+                    alt="${item.name}"
                     width="60"
                     height="60"
                     style="border-radius: 50%"

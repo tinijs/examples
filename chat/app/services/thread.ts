@@ -1,28 +1,29 @@
 import {IGunChain, IGunOnEvent} from 'gun';
 
-import {ThreadNode, Thread, MessageNode} from '../types/thread';
-
-import {debounce, once} from '../helpers/common';
-import {HashEncoding, hash} from '../helpers/crypto';
+import {debounce, once} from '@tinijs/toolbox/common';
+import {HashEncoding, sha256} from '@tinijs/toolbox/crypto';
 import {
-  GUN,
+  AuthService,
+  UserService,
   GunResult,
   StreamContext,
   StreamCallback,
   StreamOptions,
-  Streamer,
-  createStreamer,
+  Stream,
+  createStream,
   putValue,
   setValue,
   promisifyStream,
-  StreamContextItem,
-} from '../helpers/gun';
+  StreamContextEntry,
+} from '@tinijs/toolbox/gun';
 
-import {AuthService} from './auth';
-import {UsersService} from './users';
-import {FriendsService} from './friends';
+import {ThreadNode, Thread, MessageNode} from '../types/thread';
 
-export class ThreadsService {
+import {GUN} from '../consts/gun';
+
+import {FriendService} from './friend';
+
+export class ThreadService {
   readonly TOP_NODE_NAME = 'threads';
 
   get userThreadsChain() {
@@ -33,10 +34,10 @@ export class ThreadsService {
 
   constructor(
     public readonly authService: AuthService,
-    public readonly usersService: UsersService,
-    public readonly friendsService: FriendsService
+    public readonly userService: UserService,
+    public readonly friendService: FriendService
   ) {
-    (globalThis as any).threadsService = this; // for debugging
+    (globalThis as any).threadService = this; // for debugging
   }
 
   getIndexChain(userIdHash: string) {
@@ -44,12 +45,12 @@ export class ThreadsService {
   }
 
   async calculateThreadId(userId: string) {
-    return await hash(`${this.TOP_NODE_NAME}${userId}`, HashEncoding.Hex);
+    return await sha256(`${this.TOP_NODE_NAME}${userId}`, HashEncoding.Hex);
   }
 
   async buildMessage(friendEpub: string, rawContent: string) {
     const result: MessageNode = {
-      content$$: await this.authService.encryptData(rawContent, friendEpub),
+      content$$: await this.authService.encrypt(rawContent, friendEpub),
       createdAt: new Date().toISOString(),
     };
     return result;
@@ -57,10 +58,10 @@ export class ThreadsService {
 
   private async createIndex(sourceUserId: string, destUserId: string) {
     const value = destUserId;
-    const key = await hash(value);
+    const key = await sha256(value);
     if (!key) throw new Error('Create thread index failed!');
     try {
-      const chain = this.getIndexChain(await hash(sourceUserId));
+      const chain = this.getIndexChain(await sha256(sourceUserId));
       await setValue(chain, key, value);
     } catch (error) {
       // exists
@@ -70,7 +71,7 @@ export class ThreadsService {
   async extractNodeData(threadNode: GunResult<ThreadNode>, key: string) {
     if (!threadNode) return null;
     const friend = await promisifyStream(
-      this.friendsService.streamByFriendId.bind(this.friendsService),
+      this.friendService.streamByFriendId.bind(this.friendService),
       threadNode.friendId
     );
     if (!friend) return null;
@@ -79,7 +80,7 @@ export class ThreadsService {
     let latestContent = '';
     if (latestContent$$) {
       try {
-        latestContent = await this.authService.decryptData(
+        latestContent = await this.authService.decrypt(
           latestContent$$,
           friend.profile.epub
         );
@@ -99,11 +100,11 @@ export class ThreadsService {
 
   async createThread(userId: string, firstMessage?: string) {
     const currentFriend = await promisifyStream(
-      this.friendsService.streamByUserId.bind(this.friendsService),
+      this.friendService.streamByUserId.bind(this.friendService),
       userId
     );
     const friend =
-      currentFriend || (await this.friendsService.addFriend(userId));
+      currentFriend || (await this.friendService.addFriend(userId));
     // build thread
     const threadId = await this.calculateThreadId(friend.profile.id);
     const message = !firstMessage
@@ -129,7 +130,7 @@ export class ThreadsService {
     callback: StreamCallback<Thread | null>,
     options?: StreamOptions
   ) {
-    const streamer = createStreamer(callback, options);
+    const streamer = createStream(callback, options);
     const chain = this.userThreadsChain.get(threadId);
     const threadHandler = this.createThreadStreamHandler(streamer);
     // start stream
@@ -141,9 +142,9 @@ export class ThreadsService {
     callback: StreamCallback<Thread | null>,
     options?: StreamOptions
   ) {
-    const streamer = createStreamer(callback, options);
-    const chain = this.getIndexChain(await hash(this.authService.userId)).get(
-      await hash(userId)
+    const streamer = createStream(callback, options);
+    const chain = this.getIndexChain(await sha256(this.authService.userId)).get(
+      await sha256(userId)
     );
     const indexHandler = this.createIndexHandler(streamer);
     // start stream
@@ -154,17 +155,14 @@ export class ThreadsService {
     callback: StreamCallback<Thread | null>,
     options?: StreamOptions
   ) {
-    const streamer = createStreamer(callback, options);
-    const chain = this.getIndexChain(await hash(this.authService.userId));
+    const streamer = createStream(callback, options);
+    const chain = this.getIndexChain(await sha256(this.authService.userId));
     const indexHandler = this.createIndexHandler(streamer, true);
     // start stream
     chain.map().on(indexHandler);
   }
 
-  private createThreadStreamHandler(
-    streamer: Streamer<any>,
-    noDebounce = false
-  ) {
+  private createThreadStreamHandler(streamer: Stream<any>, noDebounce = false) {
     const handler = once(
       async (
         threadNode: GunResult<ThreadNode>,
@@ -173,7 +171,7 @@ export class ThreadsService {
         event: IGunOnEvent,
         context?: StreamContext
       ) => {
-        (context ||= new Map<string, StreamContextItem>()).set(key, {
+        (context ||= new Map<string, StreamContextEntry>()).set(key, {
           raw: threadNode,
           message,
           event,
@@ -189,7 +187,7 @@ export class ThreadsService {
     return noDebounce ? handler : debounce(handler);
   }
 
-  private createIndexHandler(streamer: Streamer<any>, noDebounce = false) {
+  private createIndexHandler(streamer: Stream<any>, noDebounce = false) {
     const handler = once(
       async (
         targetUserId: GunResult<string>,
@@ -198,7 +196,7 @@ export class ThreadsService {
         event: IGunOnEvent,
         context?: StreamContext
       ) => {
-        (context ||= new Map<string, StreamContextItem>()).set(key, {
+        (context ||= new Map<string, StreamContextEntry>()).set(key, {
           raw: targetUserId,
           message,
           event,
@@ -220,7 +218,7 @@ export class ThreadsService {
 
   private createThreadStreamHandlerOrCreateNewThread(
     userId: string,
-    streamer: Streamer<any>,
+    streamer: Stream<any>,
     noDebounce = false
   ) {
     const handler = once(
@@ -231,7 +229,7 @@ export class ThreadsService {
         event: IGunOnEvent,
         context?: StreamContext
       ) => {
-        (context ||= new Map<string, StreamContextItem>()).set(key, {
+        (context ||= new Map<string, StreamContextEntry>()).set(key, {
           raw: threadNode,
           message,
           event,
@@ -255,4 +253,4 @@ export class ThreadsService {
   }
 }
 
-export default ThreadsService;
+export default ThreadService;

@@ -22,7 +22,7 @@ export default [
         action: () => import('./pages/login'),
       },
       {
-        path: 'profile/:username',
+        path: 'profile/:alias',
         component: 'app-page-profile',
         action: () => import('./pages/profile'),
       },

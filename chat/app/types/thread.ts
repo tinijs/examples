@@ -1,4 +1,4 @@
-import {Friend} from './user';
+import {Friend} from './friend';
 
 export interface ThreadNode {
   friendId: string;

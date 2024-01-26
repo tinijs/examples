@@ -4,14 +4,13 @@ import {ref, Ref, createRef} from 'lit/directives/ref';
 import {Colors, CommonColors, CommonGradients} from 'tinijs';
 import {Page, TiniComponent, Reactive, Inject} from '@tinijs/core';
 import {UseRouter, Router, OnBeforeEnter} from '@tinijs/router';
+import {AuthService} from '@tinijs/toolbox/gun';
 
 import {TiniInputComponent} from '@tinijs/ui/components/input';
 import {TiniMessageComponent} from '@tinijs/ui/components/message';
 import {TiniDialogComponent} from '@tinijs/ui/components/dialog';
 
 import {randomPhoto} from '../helpers/photo';
-
-import {AuthService} from '../services/auth';
 
 import {meStore} from '../stores/me';
 

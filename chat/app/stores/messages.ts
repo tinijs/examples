@@ -1,17 +1,17 @@
+import {RenderData} from '@tinijs/core';
 import {createStore} from '@tinijs/store';
+import {once} from '@tinijs/toolbox/common';
+import {User} from '@tinijs/toolbox/gun';
 
-import {User, Friend} from '../types/user';
+import {Friend} from '../types/friend';
 import {MessageWithContext} from '../types/thread';
 
-import {once} from '../helpers/common';
-import {ChunkData} from '../helpers/render';
-
-import {MessagesService} from '../services/messages';
+import {MassageService} from '../services/message';
 
 export const messagesStore = createStore({
   cachedByUserIds: new Map<
     string,
-    ChunkData<Map<string, MessageWithContext>>
+    RenderData<Map<string, MessageWithContext>>
   >(),
 });
 
@@ -19,7 +19,7 @@ export const streamUserByUserId = once(
   (
     friend: Friend,
     currentUser: User,
-    messagesService: MessagesService,
+    massageService: MassageService,
     onMessage: (message: MessageWithContext) => void
   ) => {
     const userId = friend.profile.id;
@@ -27,7 +27,7 @@ export const streamUserByUserId = once(
     const messagesMap =
       messagesStore.cachedByUserIds.get(userId) ||
       new Map<string, MessageWithContext>();
-    messagesService.streamUserMessages(userId, ({data}) => {
+    massageService.streamUserMessages(userId, ({data}) => {
       // console.log('streamUserByUserId -> ', data?.id);
       if (!data) {
         if (!messagesStore.cachedByUserIds.get(userId)) {
@@ -46,7 +46,7 @@ export const streamUserByUserId = once(
       );
       onMessage(message);
     });
-    messagesService.streamFriendMessages(userId, ({data}) => {
+    massageService.streamFriendMessages(userId, ({data}) => {
       // console.log('streamFriendMessages -> ', data?.id);
       if (!data || userId === currentUserId) {
         if (!messagesStore.cachedByUserIds.get(userId)) {

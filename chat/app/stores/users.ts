@@ -1,20 +1,16 @@
+import {RenderData} from '@tinijs/core';
 import {createStore} from '@tinijs/store';
-
-import {User} from '../types/user';
-
-import {once} from '../helpers/common';
-import {ChunkData} from '../helpers/render';
-
-import {UsersService} from '../services/users';
+import {once} from '@tinijs/toolbox/common';
+import {UserService, User} from '@tinijs/toolbox/gun';
 
 export const usersStore = createStore({
-  cachedByIds: new Map<string, ChunkData<User>>(),
-  cachedByUsernames: new Map<string, ChunkData<User>>(),
+  cachedByIds: new Map<string, RenderData<User>>(),
+  cachedByUsernames: new Map<string, RenderData<User>>(),
 });
 
 export const streamUserById = once(
-  (id: string, usersService: UsersService) =>
-    usersService.streamById(id, ({data}) => {
+  (id: string, userService: UserService) =>
+    userService.streamById(id, ({data}) => {
       // console.log('streamById -> ', data?.id);
       usersStore.commit('cachedByIds', usersStore.cachedByIds.set(id, data));
     }),
@@ -22,8 +18,8 @@ export const streamUserById = once(
 );
 
 export const streamUserByUsername = once(
-  (username: string, usersService: UsersService) =>
-    usersService.streamByUsername(username, ({data}) => {
+  (username: string, userService: UserService) =>
+    userService.streamByAlias(username, ({data}) => {
       // console.log('streamByUsername -> ', data?.id);
       usersStore.commit(
         'cachedByUsernames',

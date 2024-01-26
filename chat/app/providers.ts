@@ -1,21 +1,25 @@
 import {DependencyProviders} from '@tinijs/core';
 
 export default {
-  usersService: () => import('./services/users'),
+  GUN_INSTANCE: () => import('./consts/gun'),
+  userService: {
+    provider: () => import('@tinijs/toolbox/gun/services/user'),
+    deps: ['GUN_INSTANCE'],
+  },
   authService: {
-    provider: () => import('./services/auth'),
-    deps: ['usersService'],
+    provider: () => import('@tinijs/toolbox/gun/services/auth'),
+    deps: ['userService', 'GUN_INSTANCE'],
   },
-  friendsService: {
-    provider: () => import('./services/friends'),
-    deps: ['authService', 'usersService'],
+  friendService: {
+    provider: () => import('./services/friend'),
+    deps: ['authService', 'userService'],
   },
-  threadsService: {
-    provider: () => import('./services/threads'),
-    deps: ['authService', 'usersService', 'friendsService'],
+  threadService: {
+    provider: () => import('./services/thread'),
+    deps: ['authService', 'userService', 'friendService'],
   },
-  messagesService: {
-    provider: () => import('./services/messages'),
-    deps: ['authService', 'usersService', 'friendsService', 'threadsService'],
+  massageService: {
+    provider: () => import('./services/message'),
+    deps: ['authService', 'userService', 'friendService', 'threadService'],
   },
 } as DependencyProviders;

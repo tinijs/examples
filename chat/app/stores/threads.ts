@@ -1,18 +1,17 @@
+import {RenderData} from '@tinijs/core';
 import {createStore} from '@tinijs/store';
+import {once} from '@tinijs/toolbox/common';
 
 import {Thread} from '../types/thread';
 
-import {once} from '../helpers/common';
-import {ChunkData} from '../helpers/render';
-
-import {ThreadsService} from '../services/threads';
+import {ThreadService} from '../services/thread';
 
 export const threadsStore = createStore({
-  list: undefined as ChunkData<Map<string, Thread>>,
+  list: undefined as RenderData<Map<string, Thread>>,
 });
 
-export const streamThreadList = once((threadsService: ThreadsService) =>
-  threadsService.streamList(({data}) => {
+export const streamThreadList = once((threadService: ThreadService) =>
+  threadService.streamList(({data}) => {
     // console.log('streamThreadList ->', data?.id);
     if (!data) {
       if (threadsStore.list) return;

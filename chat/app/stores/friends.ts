@@ -1,12 +1,11 @@
+import {RenderData} from '@tinijs/core';
 import {createStore} from '@tinijs/store';
+import {once} from '@tinijs/toolbox/common';
+import {HashEncoding, sha256} from '@tinijs/toolbox/crypto';
 
-import {Friend} from '../types/user';
+import {Friend} from '../types/friend';
 
-import {once} from '../helpers/common';
-import {ChunkData} from '../helpers/render';
-import {HashEncoding, hash} from '../helpers/crypto';
-
-import {FriendsService} from '../services/friends';
+import {FriendService} from '../services/friend';
 
 interface FriendWithDigest {
   ___: string;
@@ -14,22 +13,22 @@ interface FriendWithDigest {
 }
 
 export const friendsStore = createStore({
-  list: undefined as ChunkData<Map<string, FriendWithDigest>>,
+  list: undefined as RenderData<Map<string, FriendWithDigest>>,
   cachedByFriendIds: new Map<string, Friend | null>(),
   cachedByUserIds: new Map<string, Friend | null>(),
 });
 
-export const streamFriendList = once(async (friendsService: FriendsService) => {
+export const streamFriendList = once(async (friendService: FriendService) => {
   const storeList = (friendsStore.list ||= new Map<string, FriendWithDigest>());
   // get current friends
   // console.time('currentList');
-  const currentList = (await friendsService.getList()) as unknown as Map<
+  const currentList = (await friendService.getList()) as unknown as Map<
     string,
     FriendWithDigest
   >;
   currentList.forEach(async friend => {
     try {
-      friend.___ = await hash(JSON.stringify(friend), HashEncoding.Hex);
+      friend.___ = await sha256(JSON.stringify(friend), HashEncoding.Hex);
     } catch (error) {}
   });
   // storeList = currentList;
@@ -37,14 +36,14 @@ export const streamFriendList = once(async (friendsService: FriendsService) => {
   // console.log('get friend list ->', storeList.size, currentList);
 
   // stream new friends
-  friendsService.streamList(async ({data}) => {
+  friendService.streamList(async ({data}) => {
     if (!data) {
       if (friendsStore.list) return;
       return friendsStore.commit('list', null);
     }
     const currentItem = storeList.get(data.id);
     const newItem = data as unknown as FriendWithDigest;
-    newItem.___ = await hash(JSON.stringify(data), HashEncoding.Hex);
+    newItem.___ = await sha256(JSON.stringify(data), HashEncoding.Hex);
     // console.log('streamFriendList ->', Date.now(), data.id, currentItem?.___ === newItem.___);
     if (currentItem?.___ === newItem.___) return;
     // console.log('new friend ->', data);
@@ -53,8 +52,8 @@ export const streamFriendList = once(async (friendsService: FriendsService) => {
 });
 
 export const streamUserByFriendId = once(
-  (friendId: string, friendsService: FriendsService) =>
-    friendsService.streamByFriendId(friendId, ({data}) => {
+  (friendId: string, friendService: FriendService) =>
+    friendService.streamByFriendId(friendId, ({data}) => {
       // console.log('streamUserByFriendId -> ', data?.id);
       friendsStore.commit(
         'cachedByFriendIds',
@@ -65,8 +64,8 @@ export const streamUserByFriendId = once(
 );
 
 export const streamUserByUserId = once(
-  (userId: string, friendsService: FriendsService) =>
-    friendsService.streamByUserId(userId, ({data}) => {
+  (userId: string, friendService: FriendService) =>
+    friendService.streamByUserId(userId, ({data}) => {
       // console.log('streamUserByUserId -> ', data?.id);
       friendsStore.commit(
         'cachedByUserIds',

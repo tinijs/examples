@@ -2,20 +2,25 @@ import {html, css} from 'lit';
 import {ref, Ref, createRef} from 'lit/directives/ref';
 import {nanoid} from 'nanoid';
 
-import {Page, TiniComponent, Inject, OnInit, OnReady} from '@tinijs/core';
+import {
+  Page,
+  TiniComponent,
+  Inject,
+  OnInit,
+  OnReady,
+  RenderData,
+  render,
+} from '@tinijs/core';
 import {UseParams, OnBeforeEnter} from '@tinijs/router';
 import {Subscribe} from '@tinijs/store';
+import {AuthService, promisifyStream} from '@tinijs/toolbox/gun';
 
-import {Friend} from '../types/user';
+import {Friend} from '../types/friend';
 import {Thread, MessageWithContext} from '../types/thread';
 
-import {ChunkData, renderChunk} from '../helpers/render';
-import {promisifyStream} from '../helpers/gun';
-
-import {AuthService} from '../services/auth';
-import {FriendsService} from '../services/friends';
-import {ThreadsService} from '../services/threads';
-import {MessagesService} from '../services/messages';
+import {FriendService} from '../services/friend';
+import {ThreadService} from '../services/thread';
+import {MassageService} from '../services/message';
 
 import {meStore, streamCurrentUser} from '../stores/me';
 import {messagesStore, streamUserByUserId} from '../stores/messages';
@@ -36,17 +41,17 @@ export class AppPageThread
   implements OnBeforeEnter, OnInit, OnReady
 {
   @Inject() private readonly authService!: AuthService;
-  @Inject() private readonly friendsService!: FriendsService;
-  @Inject() private readonly threadsService!: ThreadsService;
-  @Inject() private readonly messagesService!: MessagesService;
+  @Inject() private readonly friendService!: FriendService;
+  @Inject() private readonly threadService!: ThreadService;
+  @Inject() private readonly massageService!: MassageService;
   @UseParams() private readonly params!: {id: string};
 
   @Subscribe(meStore, 'user') currentUser = meStore.user;
   @Subscribe(messagesStore) cachedByUserIds = messagesStore.cachedByUserIds;
 
   private messagesContainerRef: Ref<HTMLElement> = createRef();
-  private friend: ChunkData<Friend>;
-  private thread: ChunkData<Thread>;
+  private friend: RenderData<Friend>;
+  private thread: RenderData<Thread>;
 
   onBeforeEnter() {
     return meStore.auth.is ? null : `/login?path=${location.pathname}`;
@@ -74,12 +79,12 @@ export class AppPageThread
     // get the friend or add a new one
     let friend: Friend | null = null;
     try {
-      const currentFriend = await promisifyStream(
-        this.friendsService.streamByUserId.bind(this.friendsService),
+      const currentFriend = (await promisifyStream(
+        this.friendService.streamByUserId.bind(this.friendService),
         this.params.id
-      );
+      )) as any;
       friend =
-        currentFriend || (await this.friendsService.addFriend(this.params.id));
+        currentFriend || (await this.friendService.addFriend(this.params.id));
     } catch (error) {
       // invalid user
     }
@@ -88,7 +93,7 @@ export class AppPageThread
     let thread: Thread | null = null;
     if (friend) {
       thread = await promisifyStream(
-        this.threadsService.streamByUserId.bind(this.threadsService),
+        this.threadService.streamByUserId.bind(this.threadService),
         friend.profile.id
       );
       this.streamMessages(friend);
@@ -100,7 +105,7 @@ export class AppPageThread
 
   private streamMessages(friend: Friend) {
     if (!this.currentUser) return;
-    streamUserByUserId(friend, this.currentUser, this.messagesService, () => {
+    streamUserByUserId(friend, this.currentUser, this.massageService, () => {
       // console.log('new message ->', message);
       this.scrollToBottom();
     });
@@ -110,12 +115,12 @@ export class AppPageThread
     if (!this.friend) return;
     // init new thread
     if (!this.thread) {
-      const newThreadId = await this.threadsService.createThread(
+      const newThreadId = await this.threadService.createThread(
         this.friend.profile.id,
         content
       );
       this.thread = await promisifyStream(
-        this.threadsService.streamByThreadId.bind(this.threadsService),
+        this.threadService.streamByThreadId.bind(this.threadService),
         newThreadId
       );
       this.streamMessages(this.friend);
@@ -126,7 +131,7 @@ export class AppPageThread
       content,
       createdAt: new Date().toISOString(),
     };
-    return this.messagesService.sendMessage(
+    return this.massageService.sendMessage(
       this.friend!.profile.id,
       newMessage.id,
       content
@@ -148,7 +153,7 @@ export class AppPageThread
   }
 
   protected render() {
-    return renderChunk(this.cachedByUserIds.get(this.params.id), {
+    return render([this.cachedByUserIds.get(this.params.id)], {
       loading: loadingPartial,
       empty: invalidUserPartial,
       main: () => this.mainTemplate,

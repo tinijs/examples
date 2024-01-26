@@ -8,6 +8,7 @@ import {
   OnDestroy,
   Reactive,
 } from '@tinijs/core';
+import {initTheme, changeTheme} from '@tinijs/toolbox/app';
 
 import {IconArrowLeftRegularComponent} from '@tinijs/fluent-icons/arrow-left-regular';
 import {IconQrCodeRegularComponent} from '@tinijs/fluent-icons/qr-code-regular';
@@ -16,7 +17,10 @@ import {
   SwitchEventDetail,
 } from '@tinijs/ui/components/switch';
 
-import {Themes, initTheme, changeTheme} from '../helpers/theme';
+export enum Themes {
+  Light = 'bootstrap/light',
+  Dark = 'bootstrap/dark',
+}
 
 @Component({
   components: [
@@ -31,17 +35,18 @@ export class AppHeaderComponent
 {
   static readonly defaultTagName = 'app-header';
 
-  @Reactive() private themeId = initTheme();
+  @Reactive() private themeId = Themes.Light;
 
   private themeChangeHandler = (e: Event) =>
-    (this.themeId = (e as CustomEvent<ActiveTheme>).detail.themeId);
+    (this.themeId = (e as CustomEvent<ActiveTheme>).detail.themeId as Themes);
 
   private toggleTheme(e: CustomEvent<SwitchEventDetail>) {
     return changeTheme(e.detail.checked ? Themes.Dark : Themes.Light);
   }
 
-  onCreate() {
+  async onCreate() {
     addEventListener(THEME_CHANGE_EVENT, this.themeChangeHandler);
+    this.themeId = (await initTheme(Themes.Light)) as Themes;
   }
 
   onDestroy() {

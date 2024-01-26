@@ -6,7 +6,10 @@ export function initSentry(dsn: string) {
     dsn,
     integrations: [
       new Sentry.BrowserTracing({
-        tracePropagationTargets: ['localhost', /^https:\/\/pwa-demo.nhan\.app/],
+        tracePropagationTargets: [
+          'localhost',
+          /^https:\/\/chat-demo.tinijs\.dev/,
+        ],
       }),
       new Sentry.Replay({
         maskAllText: false,

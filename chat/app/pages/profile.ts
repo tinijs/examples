@@ -14,21 +14,17 @@ import {
   Input,
   Output,
   EventEmitter,
+  render,
 } from '@tinijs/core';
 import {UseRouter, UseParams, Router} from '@tinijs/router';
 import {Subscribe} from '@tinijs/store';
+import {AuthService, UserService, User} from '@tinijs/toolbox/gun';
 
 import {TiniDialogComponent} from '@tinijs/ui/components/dialog';
 
-import {User} from '../types/user';
-
-import {renderChunk} from '../helpers/render';
 import {randomPhoto} from '../helpers/photo';
 import {createQRCode} from '../helpers/qr';
 import {share} from '../helpers/share';
-
-import {AuthService} from '../services/auth';
-import {UsersService} from '../services/users';
 
 import {meStore, streamCurrentUser} from '../stores/me';
 import {usersStore, streamUserByUsername} from '../stores/users';
@@ -208,9 +204,9 @@ class AppPageProfileAvatarComponent extends TiniComponent {
 })
 export class AppPageProfile extends TiniComponent implements OnInit {
   @Inject() private readonly authService!: AuthService;
-  @Inject() private readonly usersService!: UsersService;
+  @Inject() private readonly userService!: UserService;
   @UseRouter() private readonly router!: Router;
-  @UseParams() private readonly params!: {username: string};
+  @UseParams() private readonly params!: {alias: string};
 
   @Subscribe(usersStore, 'cachedByUsernames') users =
     usersStore.cachedByUsernames;
@@ -220,16 +216,16 @@ export class AppPageProfile extends TiniComponent implements OnInit {
   private logoutDialogRef: Ref<TiniDialogComponent> = createRef();
 
   async onInit() {
-    streamUserByUsername(this.params.username, this.usersService);
+    streamUserByUsername(this.params.alias, this.userService);
     streamCurrentUser(this.authService);
   }
 
   private get profileUser() {
-    return this.users.get(this.params.username);
+    return this.users.get(this.params.alias);
   }
 
   private get isYours() {
-    return !!(this.currentUser?.username === this.params.username);
+    return !!(this.currentUser?.alias === this.params.alias);
   }
 
   private changeAvatar(e: CustomEvent<string>) {
@@ -262,7 +258,7 @@ export class AppPageProfile extends TiniComponent implements OnInit {
   }
 
   protected render() {
-    return renderChunk(this.profileUser, {
+    return render([this.profileUser], {
       loading: loadingPartial,
       empty: () => invalidUserPartial({message: 'Profile not found!'}),
       main: () => this.mainTemplate,
@@ -294,7 +290,7 @@ export class AppPageProfile extends TiniComponent implements OnInit {
           "
         >
           <tini-text tag="strong" fontSize="3x"
-            >${this.profileUser!.username}</tini-text
+            >${this.profileUser!.alias}</tini-text
           >
           <tini-text
             color=${Colors.Medium}

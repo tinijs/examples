@@ -4,11 +4,10 @@ import {ref, Ref, createRef} from 'lit/directives/ref';
 import {CommonColors, CommonGradients} from 'tinijs';
 import {Page, TiniComponent, Reactive, Inject} from '@tinijs/core';
 import {UseRouter, Router, OnBeforeEnter} from '@tinijs/router';
+import {AuthService} from '@tinijs/toolbox/gun';
 
 import {TiniInputComponent} from '@tinijs/ui/components/input';
 import {TiniDialogComponent} from '@tinijs/ui/components/dialog';
-
-import {AuthService} from '../services/auth';
 
 import {meStore} from '../stores/me';
 
