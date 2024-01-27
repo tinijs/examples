@@ -1,0 +1,34 @@
+{
+  "name": "tini-app",
+  "version": "0.16.0",
+  "description": "The base structure of a TiniJS app.",
+  "author": "Lam Nhan",
+  "homepage": "https://tinijs.dev",
+  "license": "MIT",
+  "browserslist": "> 0.5%, last 2 versions, not dead",
+  "scripts": {
+    "dev": "tini dev",
+    "build": "tini build",
+    "preview": "tini preview",
+    "test": "tini test",
+    "lint": "gts lint",
+    "fix": "gts fix"
+  },
+  "dependencies": {
+    "@tinijs/core": "^0.16.0",
+    "@tinijs/meta": "^0.16.0",
+    "@tinijs/pwa": "^0.16.0",
+    "@tinijs/router": "^0.16.0",
+    "@tinijs/store": "^0.16.0",
+    "@tinijs/ui": "^0.16.0",
+    "@tinijs/ui-bootstrap": "^0.16.0",
+    "@tinijs/ui-common": "^0.16.0",
+    "lit": "^3.1.0",
+    "tinijs": "^0.16.0"
+  },
+  "devDependencies": {
+    "@tinijs/cli": "^0.16.0",
+    "gts": "^5.2.0",
+    "typescript": "~5.3.3"
+  }
+}
