@@ -1,9 +1,9 @@
 {
-  "name": "tini-app",
-  "version": "0.16.0",
-  "description": "The base structure of a TiniJS app.",
+  "name": "blog-app",
+  "version": "0.0.0",
+  "description": "A simple blog app powered by the TiniJS framework.",
   "author": "Lam Nhan",
-  "homepage": "https://tinijs.dev",
+  "homepage": "https://blog-demo.tinijs.dev",
   "license": "MIT",
   "browserslist": "> 0.5%, last 2 versions, not dead",
   "scripts": {
@@ -12,22 +12,27 @@
     "preview": "tini preview",
     "test": "tini test",
     "lint": "gts lint",
-    "fix": "gts fix"
+    "fix": "gts fix",
+    "server:build": "tini server build basic"
   },
   "dependencies": {
     "@tinijs/core": "^0.16.0",
     "@tinijs/meta": "^0.16.0",
     "@tinijs/pwa": "^0.16.0",
     "@tinijs/router": "^0.16.0",
+    "@tinijs/server-basic": "file:../../server/basic/tinijs-server-basic-0.0.1.tgz",
     "@tinijs/store": "^0.16.0",
+    "@tinijs/toolbox": "file:../../toolbox",
     "@tinijs/ui": "^0.16.0",
     "@tinijs/ui-bootstrap": "^0.16.0",
     "@tinijs/ui-common": "^0.16.0",
     "lit": "^3.1.0",
+    "luxon": "^3.4.4",
     "tinijs": "^0.16.0"
   },
   "devDependencies": {
     "@tinijs/cli": "^0.16.0",
+    "@types/luxon": "^3.4.2",
     "gts": "^5.2.0",
     "typescript": "~5.3.3"
   }

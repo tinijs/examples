@@ -12,12 +12,13 @@ import {initMeta, AppWithMeta} from '@tinijs/meta';
 import {AppConfigs} from './types/common';
 
 import configs from './configs/development';
+import providers from './providers';
 import routes from './routes';
 import metas from './metas';
 
 import './layouts/default';
 
-@App()
+@App({providers})
 export class AppRoot
   extends TiniComponent
   implements AppWithConfigs<AppConfigs>, AppWithRouter, AppWithMeta
