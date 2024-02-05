@@ -1,29 +1,30 @@
 import {DependencyProviders} from '@tinijs/core';
 
+import {AUTHOR_CONTENT} from './consts/author-content';
+import {CATEGORY_CONTENT} from './consts/category-content';
+import {TAG_CONTENT} from './consts/tag-content';
+import {PAGE_CONTENT} from './consts/page-content';
+import {POST_CONTENT} from './consts/post-content';
+
 export default {
-  AUTHOR_CONTENT: () => import('./consts/author-content'),
   authorContentService: {
     provider: () => import('@tinijs/toolbox/content/service'),
-    deps: ['AUTHOR_CONTENT'],
+    deps: [() => AUTHOR_CONTENT],
   },
-  CATEGORY_CONTENT: () => import('./consts/category-content'),
   categoryContentService: {
     provider: () => import('@tinijs/toolbox/content/service'),
-    deps: ['CATEGORY_CONTENT'],
+    deps: [() => CATEGORY_CONTENT],
   },
-  TAG_CONTENT: () => import('./consts/tag-content'),
   tagContentService: {
     provider: () => import('@tinijs/toolbox/content/service'),
-    deps: ['TAG_CONTENT'],
+    deps: [() => TAG_CONTENT],
   },
-  PAGE_CONTENT: () => import('./consts/page-content'),
   pageContentService: {
     provider: () => import('@tinijs/toolbox/content/service'),
-    deps: ['PAGE_CONTENT'],
+    deps: [() => PAGE_CONTENT],
   },
-  POST_CONTENT: () => import('./consts/post-content'),
   postContentService: {
     provider: () => import('@tinijs/toolbox/content/service'),
-    deps: ['POST_CONTENT'],
+    deps: [() => POST_CONTENT],
   },
 } as DependencyProviders;

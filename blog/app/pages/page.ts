@@ -10,21 +10,27 @@ import {
   render,
   RenderData,
 } from '@tinijs/core';
-import {UseParams} from '@tinijs/router';
-import {ContentService} from '@tinijs/toolbox/content';
+import {OnBeforeEnter, UseParams} from '@tinijs/router';
 
-import {Page as ContentPage} from '../consts/page-content';
+import {Page as PageFull, PageContentService} from '../consts/page-content';
 
 import {oopsPartial} from '../partials/oops';
 
 @Page({
   name: 'app-page-page',
 })
-export class AppPagePage extends TiniComponent implements OnInit {
-  @Inject() readonly pageContentService!: ContentService<ContentPage>;
+export class AppPagePage
+  extends TiniComponent
+  implements OnInit, OnBeforeEnter
+{
+  @Inject() readonly pageContentService!: PageContentService;
   @UseParams() readonly params!: {slug: string};
 
-  @Reactive() page: RenderData<ContentPage>;
+  @Reactive() page: RenderData<PageFull>;
+
+  onBeforeEnter(...params: any[]) {
+    console.log('Page: ', this, params);
+  }
 
   async onInit() {
     try {
@@ -53,7 +59,7 @@ export class AppPagePage extends TiniComponent implements OnInit {
       : html`
           <article>
             <div><img src=${this.page.image} /></div>
-            <h2>${this.page.title}</h2>
+            <h1>${this.page.title}</h1>
             <div>${unsafeHTML(this.page.content)}</div>
           </article>
         `;

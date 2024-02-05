@@ -16,10 +16,10 @@
     "server:build": "tini server build basic"
   },
   "dependencies": {
-    "@tinijs/core": "^0.16.0",
+    "@tinijs/core": "file:../../core/tinijs-core-0.16.0.tgz",
     "@tinijs/meta": "^0.16.0",
     "@tinijs/pwa": "^0.16.0",
-    "@tinijs/router": "^0.16.0",
+    "@tinijs/router": "file:../../router",
     "@tinijs/server-basic": "file:../../server/basic/tinijs-server-basic-0.0.1.tgz",
     "@tinijs/store": "^0.16.0",
     "@tinijs/toolbox": "file:../../toolbox",

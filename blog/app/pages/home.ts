@@ -9,11 +9,11 @@ import {
   render,
   RenderData,
 } from '@tinijs/core';
-import {ContentService} from '@tinijs/toolbox/content';
+import {OnBeforeEnter} from '@tinijs/router';
 
-import {Category} from '../consts/category-content';
-import {Post} from '../consts/post-content';
-import {Tag} from '../consts/tag-content';
+import {CategoryLite, CategoryContentService} from '../consts/category-content';
+import {TagContentService} from '../consts/tag-content';
+import {PostLite, PostContentService} from '../consts/post-content';
 
 import {AppCategoriesComponent} from '../components/categories';
 import {AppPostsComponent} from '../components/posts';
@@ -22,13 +22,20 @@ import {AppPostsComponent} from '../components/posts';
   name: 'app-page-home',
   components: [AppCategoriesComponent, AppPostsComponent],
 })
-export class AppPageHome extends TiniComponent implements OnInit {
-  @Inject() readonly categoryContentService!: ContentService<Category>;
-  @Inject() readonly postContentService!: ContentService<Post>;
-  @Inject() readonly tagContentService!: ContentService<Tag>;
+export class AppPageHome
+  extends TiniComponent
+  implements OnInit, OnBeforeEnter
+{
+  @Inject() readonly categoryContentService!: CategoryContentService;
+  @Inject() readonly tagContentService!: TagContentService;
+  @Inject() readonly postContentService!: PostContentService;
 
-  @Reactive() categories: RenderData<Category[]>;
-  @Reactive() posts: RenderData<Post[]>;
+  @Reactive() categories: RenderData<CategoryLite[]>;
+  @Reactive() posts: RenderData<PostLite[]>;
+
+  onBeforeEnter(...params: any[]) {
+    console.log('Home: ', this, params);
+  }
 
   async onInit() {
     try {
@@ -58,6 +65,8 @@ export class AppPageHome extends TiniComponent implements OnInit {
             </div>
           </section>
         </aside>
+
+        <a href="/post/a-sample-post#section-header">Test link</a>
       </div>
     `;
   }

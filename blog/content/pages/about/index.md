@@ -9,4 +9,4 @@
 }
 +++
 
-<p>I am a person that writes stuff.</p>
+I am a person that writes stuff.
