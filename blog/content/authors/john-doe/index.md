@@ -1,7 +1,7 @@
 +++json
 {
   "status": "publish",
-  "photoUrl": "{% imageUrl "./photo.svg", 250 %}",
+  "photoUrl": "{% imageUrl './photo.svg' %}",
   "name": "John Doe",
   "desc": "Some description about this author.",
   "created": "2024-01-01",

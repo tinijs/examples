@@ -5,8 +5,8 @@
   "excerpt": "This is a post on My Blog about win-win survival strategies.",
   "created": "2024-01-01",
   "updated": "2024-01-01",
-  "thumbnail": "{% imageUrl "./thumbnail.webp", 480 %}",
-  "image": "{% imageUrl "./image.webp", 1920 %}",
+  "thumbnail": "{% imageUrl './thumbnail.webp', 480 %}",
+  "image": "{% imageUrl './image.webp', 1920 %}",
   "authors": ["John Doe <john-doe>"],
   "categories": ["Tech"],
   "tags": ["Win-Win", "Survival", "Strategies"]
@@ -21,11 +21,11 @@
 
 Leverage agile frameworks to provide a robust synopsis for high level overviews. Iterative approaches to corporate strategy foster collaborative thinking to further the overall value proposition. Organically grow the holistic world view of disruptive innovation via workplace diversity and empowerment.
 
-{% image "./images/image-1.jpg", "Image 1" %}
+{% image './images/image-1.jpg', 'Image 1' %}
 
 Bring to the table win-win survival strategies to ensure proactive domination. At the end of the day, going forward, a new normal that has evolved from generation X is on the runway heading towards a streamlined cloud solution. User generated content in real-time will have multiple touchpoints for offshoring.
 
-{% image "./images/image-2.png", "Image 2" %}
+{% image './images/image-2.png', 'Image 2' %}
 
 ## Code
 

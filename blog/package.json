@@ -5,22 +5,25 @@
   "author": "Lam Nhan",
   "homepage": "https://blog-demo.tinijs.dev",
   "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "browserslist": "> 0.5%, last 2 versions, not dead",
   "scripts": {
+    "content:build": "tini server build basic",
     "dev": "tini dev",
-    "build": "tini build",
+    "build": "tini build && npm run content:build",
     "preview": "tini preview",
     "test": "tini test",
     "lint": "gts lint",
-    "fix": "gts fix",
-    "server:build": "tini server build basic"
+    "fix": "gts fix"
   },
   "dependencies": {
     "@tinijs/core": "file:../../core/tinijs-core-0.16.0.tgz",
     "@tinijs/meta": "^0.16.0",
     "@tinijs/pwa": "^0.16.0",
     "@tinijs/router": "file:../../router",
-    "@tinijs/server-basic": "file:../../server/basic/tinijs-server-basic-0.0.1.tgz",
+    "@tinijs/server-basic": "^0.0.1",
     "@tinijs/store": "^0.16.0",
     "@tinijs/toolbox": "file:../../toolbox",
     "@tinijs/ui": "^0.16.0",

@@ -8,8 +8,8 @@ import {
   render,
   RenderData,
 } from '@tinijs/core';
-import {DenormItems} from '@tinijs/toolbox/schema';
-import {parseDenormItems} from '@tinijs/toolbox/content';
+import {DenormList} from '@tinijs/toolbox/schema';
+import {parseDenormList} from '@tinijs/toolbox/content';
 
 import {Post} from '../consts/post-content';
 
@@ -81,12 +81,12 @@ export class AppPostsComponent extends TiniComponent {
   }
 
   private createLinksGroup(
-    denormItems: DenormItems<any>,
+    denormItems: DenormList<any>,
     path: string,
     leadingText: string,
     fieldName = 'title'
   ) {
-    const items = parseDenormItems(denormItems.slice(0, 3), fieldName); // limit to 3 items
+    const items = parseDenormList(denormItems.slice(0, 3), fieldName); // limit to 3 items
     return html`
       <span>
         <span> ${leadingText} </span>
