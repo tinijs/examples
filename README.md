@@ -1,5 +1,10 @@
 # TiniJS Examples 
 
+> [!IMPORTANT]
+> This previously experiment is wrapped up, moving forward the development will happen at <https://github.com/tinijs/tinijs/tree/main/examples>.
+>
+> If you want to use the experimental version still, please use the version `0.16.0`.
+
 Example apps powered by the TiniJS framework.
 
 - [TiniJS Examples](#tinijs-examples)
