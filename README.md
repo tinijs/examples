@@ -1,5 +1,8 @@
 # TiniJS Examples 
 
+> [!IMPORTANT]
+> This previously experiment is wrapped up, moving forward the development will happen at <https://github.com/tinijs/tinijs>.
+
 Example apps powered by the TiniJS framework.
 
 - [TiniJS Examples](#tinijs-examples)
